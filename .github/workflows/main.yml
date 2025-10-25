@@ -52,11 +52,7 @@ jobs:
             -Dsonar.projectKey=cam640_tp-devops-git \
             -Dsonar.organization=cam640 \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            # L'argument --file ./simple-api/pom.xml est redondant ici car vous êtes déjà dans 'simple-api',
-            # mais on le laisse si vous voulez être extra prudent ou si votre setup est plus complexe.
-            # Vous pouvez le retirer si le pom.xml est directement à la racine de simple-api.
-            --file ./simple-api/pom.xml
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
   
   build-and-push-docker-image:
     # Ce job NE S'EXÉCUTE que si le job 'test-backend' est passé avec succès
