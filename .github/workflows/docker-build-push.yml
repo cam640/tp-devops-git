@@ -1,0 +1,45 @@
+name: Docker Build and Push
+
+on:
+  workflow_run:
+    workflows: ["Backend Tests and SonarCloud"] # Le nom du workflow à surveiller
+    types: [completed]
+    branches:
+      - main # Surveille l'achèvement sur la branche main uniquement
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-24.04
+    # Ce job s'exécute uniquement si le workflow déclencheur a réussi et qu'il s'agissait de la branche 'main'
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Il est crucial de récupérer le code du commit exact qui a déclenché le workflow précédent
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build image and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: simple-api
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          push: true # Pousse toujours si ce job s'exécute (car il est déjà conditionné sur main et succès)
+
+      - name: Build image and push database
+        uses: docker/build-push-action@v6
+        with:
+          context: database
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+          push: true
+
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          context: http-server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+          push: true
