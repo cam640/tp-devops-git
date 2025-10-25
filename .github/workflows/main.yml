@@ -3,15 +3,15 @@ on:
   # Déclenche le workflow lors des pushes sur la branche main
   push:
     branches:
-      - main      # UNIQUEMENT la branche 'main' (ou 'master' si c'est son nom chez vous)
+      - main
   # Déclenche le workflow lors des pull requests ciblant la branche main
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - main      # UNIQUEMENT la branche 'main' (ou 'master' si c'est son nom chez vous)
+      - main
 
 jobs:
-  test-backend: # Nom du job (tâche)
+  test-backend:
     runs-on: ubuntu-24.04 # Le type de machine virtuelle sur laquelle le job s'exécutera
 
     steps:
@@ -19,8 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 # Utilise l'action actions/checkout@v4 pour cloner votre code du dépôt
         with:
-          # IMPORTANT pour SonarCloud : Les clones superficiels doivent être désactivés
-          # pour une meilleure pertinence de l'analyse (nécessite l'historique complet)
           fetch-depth: 0
 
       # Étape 2 : Configurer le JDK 21
@@ -37,7 +35,7 @@ jobs:
           cd simple-api
           mvn clean verify
 
-      # Étape 4 : Lancer l'analyse SonarCloud (AJOUTÉE ICI)
+      # Étape 4 : Lancer l'analyse SonarCloud
       - name: Analyze with SonarCloud
         # Cette étape ne s'exécute que si les étapes précédentes (build et test Maven) ont réussi
         if: success()
