@@ -67,4 +67,4 @@ jobs:
         with:
           context: http-server # Chemin vers le Dockerfile du serveur HTTP (J'ai ajusté le nom de dossier à 'http-server' selon votre indication)
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest # Tag pour Docker Hub
-          push: ${{ github.ref == 'refs/heads/main' }} # Pousse seulement sur la branche main
+          push: ${{ github.ref == 'refs/heads/main' }}
