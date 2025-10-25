@@ -31,3 +31,40 @@ jobs:
         run: |
           cd simple-api
           mvn clean verify
+  
+  build-and-push-docker-image:
+    # Ce job NE S'EXÉCUTE que si le job 'test-backend' est passé avec succès
+    needs: test-backend
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape de connexion à Docker Hub
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      # --- Construction et push de l'image du backend (simple-api) ---
+      - name: Build image and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: simple-api # Chemin vers le Dockerfile de l'application Java
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest # Tag pour Docker Hub
+          push: ${{ github.ref == 'refs/heads/main' }} # Pousse seulement sur la branche main
+
+      # --- Construction et push de l'image de la base de données ---
+      - name: Build image and push database
+        uses: docker/build-push-action@v6
+        with:
+          context: database # Chemin vers le Dockerfile de la base de données
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest # Tag pour Docker Hub
+          push: ${{ github.ref == 'refs/heads/main' }} # Pousse seulement sur la branche main
+
+      # --- Construction et push de l'image du serveur HTTP (httpd) ---
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          context: http-server # Chemin vers le Dockerfile du serveur HTTP (J'ai ajusté le nom de dossier à 'http-server' selon votre indication)
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest # Tag pour Docker Hub
+          push: ${{ github.ref == 'refs/heads/main' }} # Pousse seulement sur la branche main
