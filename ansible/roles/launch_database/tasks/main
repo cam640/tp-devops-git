@@ -1,0 +1,12 @@
+- name: Launch Database container
+  docker_container:
+    name: database
+    image: ton_dockerhub_username/database:latest
+    state: started
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_PASSWORD: pwd
+    volumes:
+      - db-volume:/var/lib/postgresql/data
+    networks:
+      - name: my-network

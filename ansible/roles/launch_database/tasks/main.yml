@@ -1,0 +1,15 @@
+---
+# tasks file for roles/launch_database
+- name: Launch Database container
+  docker_container:
+    name: database
+    image: camgvr/tp-devops-database:latest
+    state: started
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_PASSWORD: pwd
+    volumes:
+      - db-volume:/var/lib/postgresql/data
+    networks:
+      - name: my-network
+

@@ -1,0 +1,14 @@
+---
+# tasks file for roles/launch_app
+- name: Launch API container
+  docker_container:
+    name: simple-api
+    image: camgvr/tp-devops-simple-api:latest
+    state: started
+    restart_policy: unless-stopped
+    env:
+      DATABASE_HOST: database
+      DATABASE_PASSWORD: pwd
+    networks:
+      - name: my-network
+

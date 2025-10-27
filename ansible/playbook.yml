@@ -1,0 +1,24 @@
+---
+# playbook.yml
+# Playbook principal pour configurer notre serveur distant.
+# Ce playbook utilise un rôle "docker" pour installer et configurer Docker.
+# Le rôle gère :
+#   - l'installation des paquets nécessaires
+#   - l'ajout de la clé GPG Docker
+#   - l'ajout du dépôt officiel Docker
+#   - l'installation de Docker
+#   - la création d'un environnement virtuel pour le SDK Python Docker
+#   - l'installation du SDK Python Docker
+#   - le démarrage du service Docker
+
+- hosts: all
+  gather_facts: true   # permet de récupérer les informations sur le système distant
+  become: true         # exécute les tâches en tant que superutilisateur
+  roles:
+    - docker
+    - create_network
+    - launch_database
+    - launch_app
+    - launch_proxy
+
+
