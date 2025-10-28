@@ -2,15 +2,17 @@ name: Deploy Application
 
 on:
   workflow_run:
-    workflows: ["Docker Build and Push"]
+    workflows: ["Docker Build and Push"] # nom exact du workflow build
     types: [completed]
-    branches:
-      - main
+
+permissions:
+  actions: read
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
 
     steps:
       - name: Checkout repository
@@ -25,8 +27,8 @@ jobs:
 
       - name: Install Ansible
         run: |
-          sudo apt update
-          sudo apt install -y ansible sshpass
+          sudo apt-get update
+          sudo apt-get install -y ansible sshpass
 
       - name: Deploy via Ansible
         run: |
