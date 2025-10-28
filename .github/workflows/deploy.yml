@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
           ssh-keyscan fmontiel.takima.cloud >> ~/.ssh/known_hosts
 
       - name: Install community.docker collection
