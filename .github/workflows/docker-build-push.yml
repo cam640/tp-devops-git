@@ -2,7 +2,7 @@ name: Docker Build and Push
 
 on:
   workflow_run:
-    workflows: ["Backend Tests and SonarCloud"] # Le nom du workflow à surveiller
+    workflows: ["Backend Tests and SonarCloud"]
     types: [completed]
     branches:
       - main # Surveille l'achèvement sur la branche main uniquement
