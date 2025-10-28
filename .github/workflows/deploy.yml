@@ -2,7 +2,7 @@ name: Deploy Application
 
 on:
   workflow_run:
-    workflows: ["Docker Build and Push"]  # Déclenche après le workflow Docker Build and Push
+    workflows: ["Docker Build and Push"]
     types: [completed]
 
 jobs:
