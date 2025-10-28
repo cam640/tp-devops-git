@@ -5,10 +5,6 @@ on:
     workflows: ["Docker Build and Push"] # nom exact du workflow build
     types: [completed]
 
-permissions:
-  actions: read
-  contents: read
-
 jobs:
   deploy:
     runs-on: ubuntu-24.04
