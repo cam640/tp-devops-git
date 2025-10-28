@@ -1,31 +1,41 @@
-name: Deploy Application
+name: Continuous Deployment
 
 on:
-  workflow_run:
-    workflows: ["Docker Build and Push"] # nom exact du workflow build
-    types: [completed]
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # permet de lancer manuellement depuis GitHub
 
 jobs:
   deploy:
-    runs-on: ubuntu-24.04
-    if:  github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    name: Deploy to Remote Server
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.1
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          python-version: '3.10'
 
       - name: Install Ansible
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible sshpass
+          sudo apt update
+          sudo apt install -y ansible
 
-      - name: Deploy via Ansible
+      - name: Add SSH key
         run: |
-          ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml -u admin
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan cornel.cristea.takima.cloud >> ~/.ssh/known_hosts
+
+      - name: Install community.docker collection
+        run: |
+          ansible-galaxy collection install community.docker
+
+      - name: Run Ansible playbook
+        run: |
+          ansible-playbook -i hosts.yml playbook.yml -u admin --private-key ~/.ssh/id_rsa
